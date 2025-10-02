@@ -1,0 +1,25 @@
+{
+  "name": "correios-project",
+  "version": "1.0.0",
+  "description": "Correios project with frontend and backend",
+  "main": "index.html",
+  "scripts": {
+    "start": "npm run start:backend",
+    "start:backend": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "install:backend": "cd backend && npm install",
+    "build": "echo 'Frontend build not configured'",
+    "serve": "echo 'Use a local server to serve the frontend files'"
+  },
+  "keywords": [
+    "correios",
+    "frontend",
+    "backend",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

